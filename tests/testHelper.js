@@ -14,6 +14,13 @@ const initialArticles = [
         publisher: 'Test Publisher'
     }
 ]
+
+const testUser = {
+    username: 'test',
+    name: 'Test Man',
+    password: 'hunter5'
+}
+
 const articlesInDb = async () => {
     const articles = await Article.find({})
     return articles.map((x) => x.toJSON())
@@ -32,5 +39,6 @@ const nonExistingIdTest = async () => {
 module.exports = {
     articlesInDb,
     nonExistingIdTest,
-    initialArticles
+    initialArticles,
+    testUser
 }

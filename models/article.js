@@ -12,7 +12,8 @@ const articleSchema = new mongoose.Schema({
     comments: Array,
     doi: String,
     pubDate: Date,
-    publisher: String
+    publisher: String,
+    contributor: String
 })
 articleSchema.set('toJSON', {
     transform: (document, returnedObject) => {
