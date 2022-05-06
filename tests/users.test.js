@@ -4,7 +4,6 @@ const helper = require('./userHelper')
 const app = require('../app')
 const api = supertest(app)
 const User = require('../models/user')
-//const uniqueUser = require('mongoose-unique-validator')
 const bcrypt = require('bcrypt')
 
 describe('User Tests initialized with one user "test"', () => {
@@ -84,8 +83,6 @@ describe('User Tests initialized with one user "test"', () => {
             )
         }, 10000)
         test('Non-unique username fails with 400 status code response', async () => {
-            //Test currently fails due to 500 error, however postman test under same conditions produces expected result of 400 with validationError. Check express-unique-validator version bugs.
-            //const startingUsers = await helper.usersInDb()
             const newUser = {
                 username: 'test',
                 name: 'Doppelganger testman',

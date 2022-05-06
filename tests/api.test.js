@@ -1,12 +1,22 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const app = require('../App')
+const app = require('../app')
 const Article = require('../models/article')
 const helper = require('./testHelper')
 const api = supertest(app)
+const User = require('../models/user')
+const bcrypt = require('bcrypt')
 
 beforeEach(async () => {
     await Article.deleteMany({})
+    await User.deleteMany({})
+    const passHash = await bcrypt.hash('hunter5', 10)
+    const user = new User({
+        username: 'test',
+        name: 'Test Man',
+        passHash
+    })
+    await user.save()
     let articleObj = helper.initialArticles.map(
         (article) => new Article(article)
     )
@@ -26,7 +36,7 @@ describe('GET Tests', () => {
         expect(response.body).toHaveLength(2)
         //console.log(response.statusCode, response.body)
         //console.log('token', response.token)
-    }, 10000)
+    }, 20000)
 
     test('articles contain _id property', async () => {
         const response = await api
@@ -83,7 +93,14 @@ describe('POST Tests', () => {
         const newArticle = {
             title: 'POST TEST NEW ENTRY',
             author: 'TEST',
-            url: 'https://POSTTEST.com/'
+            url: 'https://POSTTEST.com/',
+            description: 'Test Article 2',
+            tags: [],
+            watchlist: [],
+            comments: [],
+            doi: '55.55.test.doi.org',
+            pubDate: '12-12-2000',
+            publisher: 'Test Publisher 2'
         }
         await api
             .post('/api/login')
