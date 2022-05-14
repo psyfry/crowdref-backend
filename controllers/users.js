@@ -22,13 +22,14 @@ usersRouter.post('/', async (request, response) => {
         username: body.username,
         name: body.name,
         articles: [],
+        watchlist: [],
         passHash
     })
 
-    if (body.password.length < 3) {
+    if (body.password.length < 7) {
         response
             .status(400)
-            .json({ error: 'Password must be at least 3 characters' })
+            .json({ error: 'Password must be at least 7 characters' })
     } else if (body.username.length < 3) {
         response
             .status(400)

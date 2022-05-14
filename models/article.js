@@ -13,7 +13,10 @@ const articleSchema = new mongoose.Schema({
     doi: String,
     pubDate: Date,
     publisher: String,
-    contributor: String
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 })
 articleSchema.set('toJSON', {
     transform: (document, returnedObject) => {

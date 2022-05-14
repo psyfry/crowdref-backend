@@ -40,19 +40,18 @@ articleRouter.post(
         if (!body.title || !body.url) {
             return response
                 .status(400)
-                .send({ error: 'Missing Author or Title fields' })
+                .send({ error: 'Title and URL fields required' })
         } else {
             const article = new Article({
                 author: body.author,
                 title: body.title,
                 url: body.url,
-                likes:
-                    body.likes === null ||
-                    body.likes === '' ||
-                    body.likes === undefined
-                        ? 0
-                        : body.likes,
-                user: user._id
+                description: body.description,
+                doi: body.doi,
+                pubDate: body.pubDate,
+                publisher: body.publisher,
+                user: user._id,
+                tags: body.tags
             })
             try {
                 const savedArticle = await article.save()
@@ -113,7 +112,6 @@ articleRouter.put('/:id', tokenExtractor, userExtractor, async (req, res) => {
 articleRouter.put('/comment/:id', async (req, res) => {
     const body = req.body
     const id = req.params.id
-    //console.log('req.body', req.params.id)
     const currentArticleEntry = await Article.findById(id)
     const currentComments = currentArticleEntry.comments
 
@@ -125,20 +123,29 @@ articleRouter.put('/comment/:id', async (req, res) => {
             author: currentArticleEntry.author,
             title: currentArticleEntry.title,
             url: currentArticleEntry.url,
-            likes: currentArticleEntry.likes,
             comments: newComment
         }
-        //console.log('updatedComments', updatedComments.comments)
         const response = await Article.findByIdAndUpdate(id, updatedComments, {
             new: true
         })
-        //console.log('updated comment', response)
         console.log('id:', response.id, 'response comment:', response.comment)
         res.json(updatedComments.toJSON)
     }
 })
 
-//*Handle toggle watchlist
+//*Handle watch article. PUT request with no body necessary
+articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) => {
+    const body = req.body
+    const id = req.params.id
+    const currentArticleEntry = await Article.findById(id)
+    //* userExtractor to get username. I think this is accessed by req.username
+    const appendedWatchlist = req.user.watchlist.concat(id)
+    // Update User watchlist
+    const updatedUserWatchlist = await User.findByIdAndUpdate()
+    // Update Article Watchlist
+    //const response = await 
+})
+
 
 //* Get records by author
 

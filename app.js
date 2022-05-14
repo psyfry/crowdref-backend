@@ -10,6 +10,7 @@ const articleRouter = require('./controllers/articles')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const middleware = require('./utils/middleware')
+
 mongoose
     .connect(config.MONGO_URI, {
         useNewUrlParser: true,
@@ -28,7 +29,7 @@ app.use(express.json())
 app.use(middleware.requestLog)
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
-app.use('/api/records', articleRouter)
+app.use('/api/articles', articleRouter)
 
 if (process.env.NODE_ENV === 'test') {
     const testing = require('./controllers/testingRouter')

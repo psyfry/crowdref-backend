@@ -9,7 +9,14 @@ const userSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Article'
         }
-    ]
+    ],
+    watchlist: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Article'
+        }
+    ],
+    notifications: Array
 })
 
 userSchema.set('toJSON', {

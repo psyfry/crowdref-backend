@@ -11,19 +11,21 @@ const initialArticles = [
         comments: [],
         doi: '3.5.test.doi.org',
         pubDate: '5-10-2000',
-        publisher: 'Test Publisher'
+        publisher: 'Test Publisher',
+        __v: 0
     },
     {
         title: 'Test 2',
         author: 'Test 2 Author',
         url: 'testurl2.test',
         description: 'Test Article 2',
-        tags: ['testing'],
+        tags: [ 'testing' ],
         watchlist: [],
         comments: [],
         doi: '53.665.test.doi.org',
         pubDate: '5-10-2021',
-        publisher: 'Test 2 Publisher'
+        publisher: 'Test 2 Publisher',
+        __v: 0
     }
 ]
 
