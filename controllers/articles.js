@@ -3,7 +3,7 @@ const Article = require('../models/article')
 require('express-async-errors')
 const jwt = require('jsonwebtoken')
 const { userExtractor, tokenExtractor } = require('../utils/middleware')
-
+const User = require('../models/user')
 articleRouter.get('/', async (request, response) => {
     const articles = await Article.find({}).populate('user', {
         username: 1,
@@ -136,16 +136,40 @@ articleRouter.put('/comment/:id', async (req, res) => {
 //*Handle watch article. PUT request with no body necessary
 articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) => {
     const body = req.body
-    const id = req.params.id
-    const currentArticleEntry = await Article.findById(id)
-    //* userExtractor to get username. I think this is accessed by req.username
-    const appendedWatchlist = req.user.watchlist.concat(id)
-    // Update User watchlist
-    const updatedUserWatchlist = await User.findByIdAndUpdate()
-    // Update Article Watchlist
-    //const response = await 
-})
+    const articleId = req.params.id
+    const user = req.user
 
+    console.log({ user });
+    console.log(user._id.toString())
+    console.log({ articleId });
+    const currentArticleEntry = await Article.findById(articleId)
+    console.log('included', user.watchlist.includes(articleId));
+    if (!req.token || !user) {
+        return response
+            .status(401)
+            .send({ error: 'token missing or invalid' }).end()
+    }
+    if (!user.watchlist.includes(articleId)) {
+        //* Add article ID to user watchlist and user ID to article Watchlist
+        // Update User watchlist
+        const appendedWatchlist = user.watchlist.concat(articleId)
+        console.log({ appendedWatchlist });
+        const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: appendedWatchlist }, { new: true })
+        // Update Article Watchlist
+        /*         const appendedArticleWatchlist = currentArticleEntry.watchlist.concat(user._id)
+                const updatedArticleWatchlist = await Article.findOneAndUpdate(articleId, { watchlist: appendedArticleWatchlist }, { new: true }) */
+        res.send({ userWatchlist: updatedUserWatchlist })
+    } else {
+        const filteredUserWatchlist = user.watchlist.filter(y => y != articleId)
+        console.log({ filteredUserWatchlist });
+        const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: filteredUserWatchlist }, { new: true })
+        /*         const filteredArticleWatchlist = currentArticleEntry.watchlist.map(y => y === user._id ? null : y)
+                console.log({ filteredArticleWatchlist });
+                const updatedArticleWatchlist = await Article.findByIdAndUpdate(articleId, { watchlist: filteredArticleWatchlist }, { new: true }) */
+        res.send({ userWatchlist: updatedUserWatchlist })
+    }
+
+})
 
 //* Get records by author
 

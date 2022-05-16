@@ -44,9 +44,9 @@ const errorHandler = (error, request, response, next) => {
     } else if (error === 'ValidationError') {
         return response.status(401).json({ error: error.message })
     } else if (error.name === 'MongoServerError' && error.code === 11000) {
-        return response.status(400).send({
+        return response.status(401).json({
             success: false,
-            message: 'Username taken. Please select a different username'
+            error: 'Username taken. Please select a different username'
         })
     } else if (error.name === 'JsonWebTokenError') {
         return response.status(401).send({ error: 'invalid token' })

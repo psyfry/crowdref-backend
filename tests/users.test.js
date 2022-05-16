@@ -5,7 +5,7 @@ const app = require('../app')
 const api = supertest(app)
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
-
+jest.setTimeout(30000)
 describe('User Tests initialized with one user "test"', () => {
     beforeEach(async () => {
         await User.deleteMany({})
@@ -17,7 +17,7 @@ describe('User Tests initialized with one user "test"', () => {
         })
         await user.save()
         console.log('initial conditions complete')
-    }, 10000)
+    })
 
     describe('GET User list', () => {
         test('GET single initial user', async () => {
@@ -46,9 +46,9 @@ describe('User Tests initialized with one user "test"', () => {
             const usernameList = finalUsers.map((x) => x.username)
             expect(usernameList).toHaveLength(startingUsers.length + 1)
             expect(usernameList).toContain(newUser.username)
-        }, 10000)
+        })
 
-        test('Password less than 3 characters fails with 400 status', async () => {
+        test('Password less than 7 characters fails with 400 status', async () => {
             const newUser = {
                 username: 'badPass',
                 name: 'Short Pass',
@@ -62,14 +62,14 @@ describe('User Tests initialized with one user "test"', () => {
             //const finalUsers = await helper.usersInDb()
             //expect(finalUsers).toHaveLength(helper.initialUsers.length)
             expect(result.body.error).toContain(
-                'Password must be at least 3 characters'
+                'Password must be at least 7 characters'
             )
-        }, 10000)
+        })
         test('Username less than 3 characters fails with 400 status', async () => {
             const newUser = {
                 username: 'b',
                 name: 'Short username',
-                password: '123456'
+                password: '12345678'
             }
             const result = await api
                 .post('/api/users')
@@ -81,22 +81,22 @@ describe('User Tests initialized with one user "test"', () => {
             expect(result.body.error).toContain(
                 'Username must be at least 3 characters'
             )
-        }, 10000)
+        })
         test('Non-unique username fails with 400 status code response', async () => {
             const newUser = {
                 username: 'test',
-                name: 'Doppelganger testman',
-                password: '12345'
+                name: 'Test Man',
+                password: '12345678'
             }
             const result = await api
                 .post('/api/users')
                 .send(newUser)
-                .expect(400)
+                .expect(401)
                 .expect('Content-Type', /application\/json/)
             //const finalUsers = await helper.usersInDb()
-            console.log('result.body', result.body)
-            console.log('error body', result.body.error)
-            expect(result.body.message).toContain('Username taken')
+            //console.log('result.body', result.body)
+            //console.log('error body', result.body.error)
+            expect(result.body.error).toContain('Username taken. Please select a different username')
             //expect(finalUsers).toHaveLength(startingUsers.length)
         })
     })
