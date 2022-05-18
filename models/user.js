@@ -16,7 +16,9 @@ const userSchema = new mongoose.Schema({
             ref: 'Article'
         }
     ],
-    notifications: Array
+    notifications: Array,
+    avatarColor: String,
+    displayName: String
 })
 
 userSchema.set('toJSON', {

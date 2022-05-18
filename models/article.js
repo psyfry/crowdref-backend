@@ -11,7 +11,7 @@ const articleSchema = new mongoose.Schema({
     watchlist: Array,
     comments: Array,
     doi: String,
-    pubDate: Date,
+    pubDate: String,
     publisher: String,
     user: {
         type: mongoose.Schema.Types.ObjectId,
