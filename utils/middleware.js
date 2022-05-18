@@ -42,9 +42,9 @@ const errorHandler = (error, request, response, next) => {
     if (error === 'CastError') {
         return response.status(400).send({ error: 'Malformed resource ID' })
     } else if (error === 'ValidationError') {
-        return response.status(401).json({ error: error.message })
+        return response.status(400).json({ error: error.message })
     } else if (error.name === 'MongoServerError' && error.code === 11000) {
-        return response.status(401).json({
+        return response.status(400).json({
             success: false,
             error: 'Username taken. Please select a different username'
         })

@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
+const profileHelper = require('../utils/profileHelper')
 
 usersRouter.get('/', async (request, response) => {
     const users = await User.find({}).populate('articles')
@@ -17,26 +18,40 @@ usersRouter.get('/:id', async (request, response) => {
 usersRouter.post('/', async (request, response) => {
     const body = request.body
     const saltRounds = 10
-    const avatarInitials = body.name[ 0 ]
+    const avatarColor = profileHelper.getAvatarColor()
     const passHash = await bcrypt.hash(body.password, saltRounds)
-    const user = new User({
-        username: body.username,
-        name: body.name,
-        articles: [],
-        watchlist: [],
-        passHash
-    })
-
     if (body.password.length < 7) {
         response
             .status(400)
-            .json({ error: 'Password must be at least 7 characters' })
+            .json({ error: 'Password must be at least 7 characters' }).end()
     } else if (body.username.length < 3) {
         response
             .status(400)
-            .json({ error: 'Username must be at least 3 characters' })
+            .json({ error: 'Username must be at least 3 characters' }).end()
+    } else if (body.firstName.length < 1) {
+        response
+            .status(400)
+            .json({ error: 'Missing First Name' }).end()
+    } else if (body.lastName.length < 1) {
+        response
+            .status(400)
+            .json({ error: 'Missing Last Name' }).end()
     }
 
+    const formatFirst = profileHelper.formatName(body.firstName)
+    const formatLast = profileHelper.formatName(body.lastName)
+    const avatarInitials = profileHelper.getDisplayName(formatFirst, formatLast)
+    const user = new User({
+        username: body.username,
+        firstName: formatFirst,
+        lastName: formatLast,
+        articles: [],
+        watchlist: [],
+        notifications: [ { sender: 'System', message: 'Welcome to CrowdRef' } ],
+        displayName: avatarInitials,
+        avatarColor: avatarColor,
+        passHash
+    })
     const saveUser = await user.save()
     response.json(saveUser.toJSON())
 })

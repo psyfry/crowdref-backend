@@ -12,13 +12,13 @@ describe('User Tests initialized with one user "test"', () => {
         const passHash = await bcrypt.hash('hunter5', 10)
         const user = new User({
             username: 'test',
-            name: 'Test Man',
+            firstName: 'Test',
+            lastName: 'Man',
             passHash
         })
         await user.save()
         console.log('initial conditions complete')
     })
-
     describe('GET User list', () => {
         test('GET single initial user', async () => {
             const fetchedUsers = await api
@@ -33,7 +33,8 @@ describe('User Tests initialized with one user "test"', () => {
             const startingUsers = await helper.usersInDb()
             const newUser = {
                 username: 'Psyfry',
-                name: 'Psy Fry',
+                firstName: 'Psy',
+                lastName: 'Fry',
                 password: 'testPass'
             }
             await api
@@ -51,7 +52,8 @@ describe('User Tests initialized with one user "test"', () => {
         test('Password less than 7 characters fails with 400 status', async () => {
             const newUser = {
                 username: 'badPass',
-                name: 'Short Pass',
+                firstName: 'Short',
+                lastName: 'Pass',
                 password: '1'
             }
             const result = await api
@@ -68,7 +70,8 @@ describe('User Tests initialized with one user "test"', () => {
         test('Username less than 3 characters fails with 400 status', async () => {
             const newUser = {
                 username: 'b',
-                name: 'Short username',
+                firstName: 'Short',
+                lastName: 'username',
                 password: '12345678'
             }
             const result = await api
@@ -82,16 +85,82 @@ describe('User Tests initialized with one user "test"', () => {
                 'Username must be at least 3 characters'
             )
         })
-        test('Non-unique username fails with 400 status code response', async () => {
+        test('No First Name should fail with 400 status', async () => {
             const newUser = {
-                username: 'test',
-                name: 'Test Man',
+                username: 'noFirst',
+                firstName: '',
+                lastName: 'NoFirst',
                 password: '12345678'
             }
             const result = await api
                 .post('/api/users')
                 .send(newUser)
-                .expect(401)
+                .expect(400)
+                .expect('Content-Type', /application\/json/)
+            //const finalUsers = await helper.usersInDb()
+            //expect(finalUsers).toHaveLength(helper.initialUsers.length)
+            expect(result.body.error).toContain('Missing First Name')
+        })
+        test('No Last Name should fail with 400 status', async () => {
+            const newUser = {
+                username: 'noLast',
+                firstName: 'noLast',
+                lastName: '',
+                password: '12345678'
+            }
+            const result = await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(400)
+                .expect('Content-Type', /application\/json/)
+            //const finalUsers = await helper.usersInDb()
+            //expect(finalUsers).toHaveLength(helper.initialUsers.length)
+            expect(result.body.error).toContain('Missing Last Name')
+        })
+        test('Created User should have displayName field containing first and last initials', async () => {
+            const newUser = {
+                username: 'testUser',
+                firstName: 'Test',
+                lastName: 'user',
+                password: '12345678'
+            }
+            const result = await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+            //const finalUsers = await helper.usersInDb()
+            //expect(finalUsers).toHaveLength(helper.initialUsers.length)
+            expect(result.body.displayName).toContain('TU')
+        })
+        test('Created User should have defined avatarColor field', async () => {
+            const newUser = {
+                username: 'testUser',
+                firstName: 'Test',
+                lastName: 'User',
+                password: '12345678'
+            }
+            const result = await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(200)
+                .expect('Content-Type', /application\/json/)
+            //const finalUsers = await helper.usersInDb()
+            //expect(finalUsers).toHaveLength(helper.initialUsers.length)
+            console.log("avatarColor: ", result.body.avatarColor);
+            expect(result.body.avatarColor).toBeDefined()
+        })
+        test('Non-unique username fails with 400 status code response', async () => {
+            const newUser = {
+                username: 'test',
+                firstName: 'Test',
+                lastName: 'Man',
+                password: '12345678'
+            }
+            const result = await api
+                .post('/api/users')
+                .send(newUser)
+                .expect(400)
                 .expect('Content-Type', /application\/json/)
             //const finalUsers = await helper.usersInDb()
             //console.log('result.body', result.body)

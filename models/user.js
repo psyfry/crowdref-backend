@@ -2,7 +2,12 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, minLength: 3 },
-    name: { type: String, required: true },
+    firstName: {
+        type: String, minLength: 1
+    },
+    lastName: { type: String, minLength: 1 },
+    avatarColor: String,
+    displayName: String,
     passHash: String,
     articles: [
         {
@@ -16,9 +21,7 @@ const userSchema = new mongoose.Schema({
             ref: 'Article'
         }
     ],
-    notifications: Array,
-    avatarColor: String,
-    displayName: String
+    notifications: Array
 })
 
 userSchema.set('toJSON', {

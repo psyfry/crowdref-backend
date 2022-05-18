@@ -14,7 +14,8 @@ beforeEach(async () => {
     const passHash = await bcrypt.hash('hunter5', 10)
     const user = new User({
         username: 'test',
-        name: 'Test Man',
+        firstName: 'Test',
+        lastName: 'Man',
         passHash
     })
     await user.save()
