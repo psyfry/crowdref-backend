@@ -150,7 +150,7 @@ describe('User Tests initialized with one user "test"', () => {
             console.log("avatarColor: ", result.body.avatarColor);
             expect(result.body.avatarColor).toBeDefined()
         })
-        test('Non-unique username fails with 400 status code response', async () => {
+        test('Non-unique username fails with 500 status code response', async () => {
             const newUser = {
                 username: 'test',
                 firstName: 'Test',
