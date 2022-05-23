@@ -275,48 +275,46 @@ describe('Watchlist Tests', () => {
         expect(userResult.watchlist).toHaveLength(0)
     })
 })
-/*     test('When user "test", sends watch request to unwatched article at api/:id/watch , their user ID is added to the article watchlist field', async () => {
-        const startingArticle = await helper.articlesInDb()
-        const watchedArticle = startingArticle[ 0 ]
-        const login = await api
-            .post('/api/login')
-            .send({ username: 'test', password: 'hunter5' })
-            .expect(200)
+/* test('When user "test", sends watch request to unwatched article at api/:id/watch , their user ID is added to the article watchlist field', async () => {
+    const startingArticle = await helper.articlesInDb()
+    const watchedArticle = startingArticle[ 0 ]
+    const login = await api
+        .post('/api/login')
+        .send({ username: 'test', password: 'hunter5' })
+        .expect(200)
 
-        const token = login.body.token
+    const token = login.body.token
 
-        await api
-            .put(`/api/articles/${watchedArticle.id}/watch`)
-            .set('Authorization', 'Bearer ' + token)
-            .expect(200)
-        const endingArticles = await helper.articlesInDb()
-        expect(endingArticles[ 0 ].watchlist).toHaveLength(1)
-        expect(endingArticles[ 0 ].watchlist).toContain(watchedArticle.id)  //* Recheck whether toContain is the proper method 
+    await api
+        .put(`/api/articles/${watchedArticle.id}/watch`)
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+    const endingArticles = await helper.articlesInDb()
+    expect(endingArticles[ 0 ].watchlist).toHaveLength(1)
+    expect(endingArticles[ 0 ].watchlist).toContain(watchedArticle.id)
+})
+test('When user "test", sends unwatch request to a currently watched article at api/:id/watch , their user ID is removed from the article watchlist field', async () => {
+    const startingArticle = await helper.articlesInDb()
+    const watchedArticle = startingArticle[ 0 ]
+    const login = await api
+        .post('/api/login')
+        .send({ username: 'test', password: 'hunter5' })
+        .expect(200)
 
-    }) */
-/*     test('When user "test", sends unwatch request to a currently watched article at api/:id/unwatch , their user ID is removed from the article watchlist field', async () => {
-        const startingArticle = await helper.articlesInDb()
-        const watchedArticle = startingArticle[ 0 ]
-        const login = await api
-            .post('/api/login')
-            .send({ username: 'test', password: 'hunter5' })
-            .expect(200)
- 
-        const token = login.body.token
- 
-        //* This might cause issues with mongoDB race conditions.
-        await api
-            .put(`/api/articles/${watchedArticle.id}/watch`)
-            .set('Authorization', 'Bearer ' + token)
-            .expect(200)
-        await api
-            .put(`/api/articles/${watchedArticle.id}/unwatch`)
-            .set('Authorization', 'Bearer ' + token)
-            .expect(200)
-        const endingArticles = await helper.articlesInDb()
-        expect(endingArticles[ 0 ].watchlist).toHaveLength(0)
-    })
+    const token = login.body.token
+
+    await api
+        .put(`/api/articles/${watchedArticle.id}/watch`)
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+    await api
+        .put(`/api/articles/${watchedArticle.id}/watch`)
+        .set('Authorization', 'Bearer ' + token)
+        .expect(200)
+    const endingArticles = await helper.articlesInDb()
+    expect(endingArticles[ 0 ].watchlist).toHaveLength(0)
 }) */
+
 
 //* Future feature 
 /* describe('TAGGING TESTS', () => {

@@ -1,6 +1,6 @@
 
 const getAvatarColor = () => {
-    const colors = [ 'red', 'blue', 'green', 'purple', 'yellow', 'orange', 'pink' ]
+    const colors = [ 'red', 'blue', 'green', 'purple', 'yellow', 'indigo', 'orange', 'lime', 'teal', 'cyan' ]
     function getRandomInt(max) {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max)) //The maximum is inclusive and the minimum is inclusive

@@ -2,12 +2,17 @@ const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
 const profileHelper = require('../utils/profileHelper')
+require('express-async-errors')
+const jwt = require('jsonwebtoken')
+const { userExtractor, tokenExtractor } = require('../utils/middleware')
+
 
 usersRouter.get('/', async (request, response) => {
     const users = await User.find({}).populate('articles')
 
     response.json(users.map((x) => x.toJSON()))
 })
+
 
 usersRouter.get('/:id', async (request, response) => {
     const user = await User.findById(request.params.id)

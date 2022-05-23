@@ -10,6 +10,7 @@ const articleRouter = require('./controllers/articles')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const middleware = require('./utils/middleware')
+const watchlistRouter = require('./controllers/watchlist')
 
 mongoose
     .connect(config.MONGO_URI, {
@@ -30,7 +31,7 @@ app.use(middleware.requestLog)
 app.use('/api/login', loginRouter)
 app.use('/api/users', usersRouter)
 app.use('/api/articles', articleRouter)
-
+app.use('/api/watchlist', watchlistRouter)
 if (process.env.NODE_ENV === 'test') {
     const testing = require('./controllers/testingRouter')
     app.use('/api/testing/', testing)

@@ -4,6 +4,7 @@ require('express-async-errors')
 const jwt = require('jsonwebtoken')
 const { userExtractor, tokenExtractor } = require('../utils/middleware')
 const User = require('../models/user')
+
 articleRouter.get('/', async (request, response) => {
     const articles = await Article.find({}).populate('user', {
         username: 1,
@@ -12,6 +13,10 @@ articleRouter.get('/', async (request, response) => {
     response.json(articles.map((x) => x.toJSON()))
 })
 
+articleRouter.get('/tags/:tag', async (req, res) => {
+    const articles = await Article.find({ tags: req.params.tag })
+    res.json(articles.map((x) => x.toJSON()))
+})
 articleRouter.get('/:id', async (request, response) => {
     const articles = await Article.findById(request.params.id).populate(
         'user',
@@ -51,7 +56,9 @@ articleRouter.post(
                 pubDate: body.pubDate,
                 publisher: body.publisher,
                 user: user._id,
-                tags: body.tags
+                tags: body.tags,
+                displayName: user.displayName,
+                avatarColor: user.avatarColor
             })
             try {
                 const savedArticle = await article.save()
@@ -109,7 +116,7 @@ articleRouter.put('/:id', tokenExtractor, userExtractor, async (req, res) => {
 })
 
 //* Handle article comments
-articleRouter.put('/comment/:id', async (req, res) => {
+articleRouter.put('/comment/:id', tokenExtractor, userExtractor, async (req, res) => {
     const body = req.body
     const id = req.params.id
     const currentArticleEntry = await Article.findById(id)
@@ -139,9 +146,6 @@ articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) 
     const articleId = req.params.id
     const user = req.user
 
-    console.log({ user });
-    console.log(user._id.toString())
-    console.log({ articleId });
     const currentArticleEntry = await Article.findById(articleId)
     console.log('included', user.watchlist.includes(articleId));
     if (!req.token || !user) {
@@ -158,7 +162,7 @@ articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) 
         // Update Article Watchlist
         /*         const appendedArticleWatchlist = currentArticleEntry.watchlist.concat(user._id)
                 const updatedArticleWatchlist = await Article.findOneAndUpdate(articleId, { watchlist: appendedArticleWatchlist }, { new: true }) */
-        res.send({ userWatchlist: updatedUserWatchlist })
+        res.status(200).json(updatedUserWatchlist.toJSON)
     } else {
         const filteredUserWatchlist = user.watchlist.filter(y => y != articleId)
         console.log({ filteredUserWatchlist });
@@ -166,14 +170,17 @@ articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) 
         /*         const filteredArticleWatchlist = currentArticleEntry.watchlist.map(y => y === user._id ? null : y)
                 console.log({ filteredArticleWatchlist });
                 const updatedArticleWatchlist = await Article.findByIdAndUpdate(articleId, { watchlist: filteredArticleWatchlist }, { new: true }) */
-        res.send({ userWatchlist: updatedUserWatchlist })
+        res.status(200).json(updatedUserWatchlist.toJSON)
     }
 
 })
-
 //* Get records by author
 
 //* Get records by Tag
+
+//* Get Records by Search Query
+
+
 
 //* Future feature: Handle user notify ping. This feature will be implemented on separate controller notifications.js
 
