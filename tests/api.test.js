@@ -215,21 +215,22 @@ describe('Comment Tests', () => {
         await api
             .put(`/api/articles/comment/${updatedArticle.id}/`)
             .set('Authorization', 'Bearer ' + token)
-            .send({ comments: 'test comment' })
+            .send({ comment: 'test comment' })
             .expect(200)
         await api
             .put(`/api/articles/comment/${updatedArticle.id}/`)
             .set('Authorization', 'Bearer ' + token)
-            .send({ comments: 'test comment' })
+            .send({ comment: 'test comment' })
             .expect(200)
         const endingArticles = await helper.articlesInDb()
         expect(endingArticles).toHaveLength(helper.initialArticles.length)
         const contentTest = endingArticles.map((x) => x.comments)
+        const articleComments = contentTest[ 0 ].map(x => x.text)
 
-        /*         console.log('mapped comments:', contentTest)
-        console.log('consoleTest[0]', contentTest[0])
-        console.log(response.data) */
-        expect(contentTest[ 0 ]).toEqual([ 'test comment', 'test comment' ])
+        console.log('mapped comments:', contentTest)
+        console.log('consoleTest[0]', contentTest[ 0 ])
+        //console.log(response.data)
+        expect(articleComments).toEqual([ 'test comment', 'test comment' ])
     })
 })
 

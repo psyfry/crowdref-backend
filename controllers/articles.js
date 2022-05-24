@@ -58,7 +58,8 @@ articleRouter.post(
                 user: user._id,
                 tags: body.tags,
                 displayName: user.displayName,
-                avatarColor: user.avatarColor
+                avatarColor: user.avatarColor,
+                createDate: new Date()
             })
             try {
                 const savedArticle = await article.save()
@@ -102,7 +103,7 @@ articleRouter.put('/:id', tokenExtractor, userExtractor, async (req, res) => {
         title: body.title,
         url: body.url,
         tags: body.tags,
-        modificationDate: Date.now(),
+        modificationDate: new Date(),
         doi: body.doi,
         pubDate: body.pubDate,
         publisher: body.publisher,
@@ -115,22 +116,27 @@ articleRouter.put('/:id', tokenExtractor, userExtractor, async (req, res) => {
     res.json(updatedArticle.toJSON)
 })
 
-//* Handle article comments
+//* Handle Add Article comment
 articleRouter.put('/comment/:id', tokenExtractor, userExtractor, async (req, res) => {
     const body = req.body
     const id = req.params.id
+    const displayName = req.user.displayName
+    const avatarColor = req.user.avatarColor
     const currentArticleEntry = await Article.findById(id)
     const currentComments = currentArticleEntry.comments
-
-    if (body.comments === '' || body.comments === null) {
+    const newCommentObject = {
+        color: avatarColor,
+        name: displayName,
+        userId: req.user.id,
+        text: body.comment,
+        timestamp: new Date()
+    }
+    if (body.comment === '' || body.comment === null) {
         return res.status(400).end()
     } else {
-        const newComment = currentComments.concat(body.comments)
+        const newComments = currentComments.concat(newCommentObject)
         const updatedComments = {
-            author: currentArticleEntry.author,
-            title: currentArticleEntry.title,
-            url: currentArticleEntry.url,
-            comments: newComment
+            comments: newComments
         }
         const response = await Article.findByIdAndUpdate(id, updatedComments, {
             new: true
