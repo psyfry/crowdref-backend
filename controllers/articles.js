@@ -8,7 +8,7 @@ const User = require('../models/user')
 articleRouter.get('/', async (request, response) => {
     const articles = await Article.find({}).populate('user', {
         username: 1,
-        name: 1
+        displayName: 1
     })
     response.json(articles.map((x) => x.toJSON()))
 })
@@ -22,7 +22,7 @@ articleRouter.get('/:id', async (request, response) => {
         'user',
         {
             username: 1,
-            name: 1
+            displayName: 1
         }
     )
     response.json(articles.toJSON())
@@ -35,17 +35,16 @@ articleRouter.post(
     async (request, response, next) => {
         const body = request.body
         const user = request.user
-
         const decodedToken = jwt.verify(request.token, process.env.SECRET)
         if (!request.token || !decodedToken.id) {
             return response
                 .status(401)
                 .send({ error: 'token missing or invalid' })
         }
-        if (!body.title || !body.url) {
+        if (!body.title || !body.author) {
             return response
                 .status(400)
-                .send({ error: 'Title and URL fields required' })
+                .send({ error: 'Error: Title and Author fields required' })
         } else {
             const article = new Article({
                 author: body.author,
@@ -59,13 +58,17 @@ articleRouter.post(
                 tags: body.tags,
                 displayName: user.displayName,
                 avatarColor: user.avatarColor,
-                createDate: new Date()
-            })
+                createDate: new Date(),
+
+            });
             try {
                 const savedArticle = await article.save()
                 user.articles = user.articles.concat(savedArticle._id)
-                await user.save()
-                response.status(201).json(savedArticle.toJSON)
+                //* validateModifiedOnly:true option required on user.save() to resolve bug with mongoose-unique-validator _id check
+                await user.save({
+                    validateModifiedOnly: true,
+                })
+                return response.status(201).json(savedArticle.toJSON())
             } catch (exception) {
                 next(exception)
             }
@@ -110,10 +113,10 @@ articleRouter.put('/:id', tokenExtractor, userExtractor, async (req, res) => {
         description: body.description
     }
 
-    await Article.findByIdAndUpdate(req.params.id, updatedArticle, {
+    const returnedArticle = await Article.findByIdAndUpdate(req.params.id, updatedArticle, {
         new: true
     })
-    res.json(updatedArticle.toJSON)
+    res.json(returnedArticle.toJSON())
 })
 
 //* Handle Add Article comment
@@ -163,7 +166,7 @@ articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) 
         //* Add article ID to user watchlist and user ID to article Watchlist
         // Update User watchlist
         const appendedWatchlist = user.watchlist.concat(articleId)
-        console.log({ appendedWatchlist });
+        //console.log({ appendedWatchlist });
         const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: appendedWatchlist }, { new: true })
         // Update Article Watchlist
         /*         const appendedArticleWatchlist = currentArticleEntry.watchlist.concat(user._id)
@@ -171,7 +174,7 @@ articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) 
         res.status(200).json(updatedUserWatchlist.toJSON)
     } else {
         const filteredUserWatchlist = user.watchlist.filter(y => y != articleId)
-        console.log({ filteredUserWatchlist });
+        //console.log({ filteredUserWatchlist });
         const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: filteredUserWatchlist }, { new: true })
         /*         const filteredArticleWatchlist = currentArticleEntry.watchlist.map(y => y === user._id ? null : y)
                 console.log({ filteredArticleWatchlist });

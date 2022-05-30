@@ -32,7 +32,7 @@ describe('GET Tests', () => {
             .get('/api/articles')
             .set(
                 'Authorization',
-                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsImlkIjoiNjE3NWQyMTJhYzg4ZjE2MTEwN2IwZDFjIiwiaWF0IjoxNjM1MTExNTMwLCJleHAiOjE2Mzg3MTE1MzB9.BLVhRYEsnMwJeqbDFFkJMooC-nYGe4-CXbbeqHgVE_A'
+                'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsImlkIjoiNjE3NWQyMTJhYzg4ZjE2MTEwN2IwZDFjIiwiaWF0IjoxNjM1MTExNTMwLCJleHAiOjE2Mzg3MTE1MzB9.BLVhRYEsnMwJeqbDFFkJMooC-nYGe4-CXbbeqHgVE_A'
             )
             .expect(200)
             .expect('Content-Type', /application\/json/)
@@ -46,7 +46,7 @@ describe('GET Tests', () => {
             .get('/api/articles')
             .set(
                 'Authorization',
-                'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsImlkIjoiNjE3NWQyMTJhYzg4ZjE2MTEwN2IwZDFjIiwiaWF0IjoxNjM1MTExNTMwLCJleHAiOjE2Mzg3MTE1MzB9.BLVhRYEsnMwJeqbDFFkJMooC-nYGe4-CXbbeqHgVE_A'
+                'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoidGVzdCIsImlkIjoiNjE3NWQyMTJhYzg4ZjE2MTEwN2IwZDFjIiwiaWF0IjoxNjM1MTExNTMwLCJleHAiOjE2Mzg3MTE1MzB9.BLVhRYEsnMwJeqbDFFkJMooC-nYGe4-CXbbeqHgVE_A'
             )
             .send()
             .expect(200)
@@ -80,7 +80,7 @@ describe('POST Tests', () => {
             .expect('Content-Type', /application\/json/)
         const response = await api
             .get('/api/articles')
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .expect(200)
             .expect('Content-Type', /application\/json/)
         await expect(response.body).toHaveLength(
@@ -110,19 +110,19 @@ describe('POST Tests', () => {
         const token = '11111111111111111111111111111'
         await api
             .post('/api/articles')
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .send(newArticle)
             .expect(401)
             .expect('Content-Type', /application\/json/)
         const response = await api
             .get('/api/articles')
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .expect(200)
             .expect('Content-Type', /application\/json/)
         await expect(response.body).toHaveLength(helper.initialArticles.length)
     })
 
-    test(' if the title or URL property is missing from the request, it will return 400 Bad Request', async () => {
+    test(' if the title or author property is missing from the request, it will return 400 Bad Request', async () => {
         const testArticles = [
             {
                 author: 'TEST',
@@ -130,7 +130,7 @@ describe('POST Tests', () => {
             },
             {
                 title: 'POST TEST NEW ENTRY',
-                author: 'TEST'
+                url: 'https://POSTTEST.com/'
             }
         ]
         const login = await api
@@ -140,12 +140,12 @@ describe('POST Tests', () => {
         const token = login.body.token
         await api
             .post('/api/articles')
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .send(testArticles[ 0 ])
             .expect(400)
         await api
             .post('/api/articles')
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .send(testArticles[ 1 ])
             .expect(400)
     })
@@ -162,7 +162,7 @@ describe('DELETE method Tests', () => {
         const token = login.body.token
         await api
             .delete(`/api/articles/${entryToDelete.id}`)
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .expect(204)
         const endArticles = await helper.articlesInDb()
         expect(endArticles).toHaveLength(startingArticles.length - 1)
@@ -181,7 +181,7 @@ describe('PUT Entry Update tests', () => {
         const token = login.body.token
         await api
             .put(`/api/articles/${updatedArticle.id}`)
-            .set('Authorization', 'Bearer ' + token)
+            .set('Authorization', 'bearer ' + token)
             .send({
                 title: 'PUT TEST Editted ENTRY',
                 author: 'TEST',
@@ -197,6 +197,7 @@ describe('PUT Entry Update tests', () => {
             .expect(200)
         const endingArticles = await helper.articlesInDb()
         expect(endingArticles).toHaveLength(helper.initialArticles.length)
+        expect(endingArticles[ 0 ].title).toContain('PUT TEST Editted ENTRY')
     })
 })
 describe('Comment Tests', () => {
@@ -209,9 +210,6 @@ describe('Comment Tests', () => {
             .expect(200)
 
         const token = login.body.token
-
-        //console.log('Id to update comment: ', updatedArticleId)
-
         await api
             .put(`/api/articles/comment/${updatedArticle.id}/`)
             .set('Authorization', 'Bearer ' + token)
@@ -226,10 +224,6 @@ describe('Comment Tests', () => {
         expect(endingArticles).toHaveLength(helper.initialArticles.length)
         const contentTest = endingArticles.map((x) => x.comments)
         const articleComments = contentTest[ 0 ].map(x => x.text)
-
-        console.log('mapped comments:', contentTest)
-        console.log('consoleTest[0]', contentTest[ 0 ])
-        //console.log(response.data)
         expect(articleComments).toEqual([ 'test comment', 'test comment' ])
     })
 })
@@ -263,7 +257,6 @@ describe('Watchlist Tests', () => {
 
         const token = login.body.token
 
-        //* This might cause issues with mongoDB race conditions.
         await api
             .put(`/api/articles/${watchedArticle.id}/watch`)
             .set('Authorization', 'Bearer ' + token)
