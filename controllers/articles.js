@@ -25,7 +25,7 @@ articleRouter.get('/:id', async (request, response) => {
             displayName: 1
         }
     )
-    response.json(articles.toJSON())
+    response.json(articles)
 })
 
 articleRouter.post(
@@ -149,14 +149,14 @@ articleRouter.put('/comment/:id', tokenExtractor, userExtractor, async (req, res
     }
 })
 
-//*Handle watch article. PUT request with no body necessary
+//*Handle watch article. PUT request
 articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) => {
     const body = req.body
     const articleId = req.params.id
     const user = req.user
-
-    const currentArticleEntry = await Article.findById(articleId)
-    console.log('included', user.watchlist.includes(articleId));
+    console.log({ articleId });
+    //const currentArticleEntry = await Article.findById(articleId)
+    console.log('included', user.watchlist.includes(articleId.toString()));
     if (!req.token || !user) {
         return response
             .status(401)
@@ -166,20 +166,24 @@ articleRouter.put('/:id/watch', tokenExtractor, userExtractor, async (req, res) 
         //* Add article ID to user watchlist and user ID to article Watchlist
         // Update User watchlist
         const appendedWatchlist = user.watchlist.concat(articleId)
-        //console.log({ appendedWatchlist });
-        const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: appendedWatchlist }, { new: true })
+        console.log({ appendedWatchlist });
+        user.watchlist = appendedWatchlist
+        const updatedUserWatchlist = await user.save({ validateModifiedOnly: true })
+        //const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: appendedWatchlist }, { new: true })
         // Update Article Watchlist
         /*         const appendedArticleWatchlist = currentArticleEntry.watchlist.concat(user._id)
                 const updatedArticleWatchlist = await Article.findOneAndUpdate(articleId, { watchlist: appendedArticleWatchlist }, { new: true }) */
-        res.status(200).json(updatedUserWatchlist.toJSON)
+        res.json(updatedUserWatchlist)
     } else {
         const filteredUserWatchlist = user.watchlist.filter(y => y != articleId)
-        //console.log({ filteredUserWatchlist });
-        const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: filteredUserWatchlist }, { new: true })
+        console.log({ filteredUserWatchlist });
+        user.watchlist = filteredUserWatchlist
+        const updatedUserWatchlist = await user.save({ validateModifiedOnly: true })
+        //const updatedUserWatchlist = await User.findOneAndUpdate(user._id, { watchlist: filteredUserWatchlist }, { validateModifiedOnly: true, new: true })
         /*         const filteredArticleWatchlist = currentArticleEntry.watchlist.map(y => y === user._id ? null : y)
                 console.log({ filteredArticleWatchlist });
                 const updatedArticleWatchlist = await Article.findByIdAndUpdate(articleId, { watchlist: filteredArticleWatchlist }, { new: true }) */
-        res.status(200).json(updatedUserWatchlist.toJSON)
+        res.json(updatedUserWatchlist.toJSON)
     }
 
 })

@@ -8,7 +8,7 @@ const profileHelper = require('../utils/profileHelper')
 
 
 usersRouter.get('/', async (request, response) => {
-    const users = await User.find({}).populate('articles').populate('watchlist')
+    const users = await User.find({}).populate('articles')
 
     response.json(users.map((x) => x.toJSON()))
 })

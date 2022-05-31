@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     ],
     notifications: Array
 })
-userSchema.plugin(uniqueValidator, { message: 'Username taken. Please select a different username' })
+//userSchema.plugin(uniqueValidator, { message: 'Username taken. Please select a different username' })
 userSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
