@@ -13,8 +13,6 @@ const articleSchema = new mongoose.Schema({
     doi: String,
     pubDate: String,
     publisher: String,
-    displayName: String,
-    avatarColor: String,
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'

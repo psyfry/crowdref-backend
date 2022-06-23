@@ -1,6 +1,6 @@
 
 const getAvatarColor = () => {
-    const colors = [ 'red', 'blue', 'green', 'purple', 'indigo', 'orange', 'lime', 'teal', 'cyan' ]
+    const colors = [ 'red', 'blue', 'green', 'purple', 'indigo', '#583c87', 'orange', 'lime', 'teal', '#0097a7', '#df487f', '#33a095', '#005f56' ]
     //Return avatar color at random index 
     return colors[ Math.floor(Math.random() * colors.length) ]
 }

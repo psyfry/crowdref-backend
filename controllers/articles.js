@@ -8,7 +8,8 @@ const User = require('../models/user')
 articleRouter.get('/', async (request, response) => {
     const articles = await Article.find({}).populate('user', {
         username: 1,
-        displayName: 1
+        displayName: 1,
+        avatarColor: 1
     })
     response.json(articles.map((x) => x.toJSON()))
 })
@@ -22,7 +23,8 @@ articleRouter.get('/:id', async (request, response) => {
         'user',
         {
             username: 1,
-            displayName: 1
+            displayName: 1,
+            avatarColor: 1
         }
     )
     response.json(articles)
@@ -36,6 +38,7 @@ articleRouter.post(
         const body = request.body
         const user = request.user
         const decodedToken = jwt.verify(request.token, process.env.SECRET)
+
         if (!request.token || !decodedToken.id) {
             return response
                 .status(401)
@@ -46,18 +49,17 @@ articleRouter.post(
                 .status(400)
                 .send({ error: 'Error: Title and Author fields required' })
         } else {
+
             const article = new Article({
                 author: body.author,
                 title: body.title,
-                url: body.url,
-                description: body.description,
-                doi: body.doi,
-                pubDate: body.pubDate,
-                publisher: body.publisher,
+                url: body.url ? body.url : "--",
+                description: body.description ? body.description : "N/A",
+                doi: body.doi ? body.doi : "--",
+                pubDate: body.pubDate ? body.pubDate : "--",
+                publisher: body.publisher ? body.publisher : "--",
                 user: user._id,
                 tags: body.tags,
-                displayName: user.displayName,
-                avatarColor: user.avatarColor,
                 createDate: new Date(),
 
             });
@@ -132,7 +134,8 @@ articleRouter.put('/comment/:id', tokenExtractor, userExtractor, async (req, res
         name: displayName,
         userId: req.user.id,
         text: body.comment,
-        timestamp: new Date()
+        createDate: new Date(),
+        username: req.user.username
     }
     if (body.comment === '' || body.comment === null) {
         return res.status(400).end()
@@ -144,7 +147,7 @@ articleRouter.put('/comment/:id', tokenExtractor, userExtractor, async (req, res
         const response = await Article.findByIdAndUpdate(id, updatedComments, {
             new: true
         })
-        console.log('id:', response.id, 'response comment:', response.comment)
+        //console.log('id:', response.id, 'response comment:', response.comment)
         res.json(updatedComments.toJSON)
     }
 })
