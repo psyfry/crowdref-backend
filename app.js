@@ -11,7 +11,7 @@ const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
 const middleware = require('./utils/middleware')
 const watchlistRouter = require('./controllers/watchlist')
-
+//const responseTime = require('response-time')
 mongoose
     .connect(config.MONGO_URI, {
         useNewUrlParser: true,
@@ -36,6 +36,9 @@ if (process.env.NODE_ENV === 'test') {
     const testing = require('./controllers/testingRouter')
     app.use('/api/testing/', testing)
 }
+/* app.use(responseTime((req, res, time) => {
+    logger.info(time)
+})) */
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 

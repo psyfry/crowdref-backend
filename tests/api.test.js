@@ -3,7 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const Article = require('../models/article')
 const helper = require('./testHelper')
-const userHelper = require('./userHelper')
+//const userHelper = require('./userHelper')
 const api = supertest(app)
 const User = require('../models/user')
 const bcrypt = require('bcrypt')
@@ -310,7 +310,7 @@ test('When user "test", sends unwatch request to a currently watched article at 
 }) */
 
 
-//* Future feature 
+//* Future feature
 /* describe('TAGGING TESTS', () => {
     test('in use tags should be aggregatted', () => { second })
  })*/

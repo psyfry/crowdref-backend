@@ -147,7 +147,7 @@ describe('User Tests initialized with one user "test"', () => {
                 .expect('Content-Type', /application\/json/)
             //const finalUsers = await helper.usersInDb()
             //expect(finalUsers).toHaveLength(helper.initialUsers.length)
-            console.log("avatarColor: ", result.body.avatarColor);
+            console.log('avatarColor: ', result.body.avatarColor)
             expect(result.body.avatarColor).toBeDefined()
         })
         test('Non-unique username fails with 500 status code response', async () => {

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator')
+//const uniqueValidator = require('mongoose-unique-validator')
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, minLength: 3, unique: true, uniqueCaseInsensitive: true },
@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
     ],
     notifications: Array
 })
-//userSchema.plugin(uniqueValidator, { message: 'Username taken. Please select a different username' })
+/* userSchema.plugin(uniqueValidator, { message: 'Username taken. Please select a different username' }) */
 userSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()

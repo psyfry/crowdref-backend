@@ -4,10 +4,10 @@ const User = require('../models/user')
 
 watchlistRouter.get('/', tokenExtractor, userExtractor, async (req, res) => {
     const user = req.user
-    console.log({ user });
+    console.log({ user })
     const populatedWatchlist = await User.findById(user._id).populate('watchlist')
     //const populatedWatchlist = await user.populate('watchlist')
-    console.log({ populatedWatchlist });
+    console.log({ populatedWatchlist })
     res.send(populatedWatchlist.watchlist.map(x => x.toJSON()))
     //res.send(populatedWatchlist.watchlist.map(x => x.toJSON())) : res.status(404).end()
 })

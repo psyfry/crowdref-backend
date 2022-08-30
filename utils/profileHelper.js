@@ -1,13 +1,13 @@
 
 const getAvatarColor = () => {
     const colors = [ 'red', 'blue', 'green', 'purple', 'indigo', '#583c87', 'orange', 'lime', 'teal', '#0097a7', '#df487f', '#33a095', '#005f56' ]
-    //Return avatar color at random index 
+    //Return avatar color at random index
     return colors[ Math.floor(Math.random() * colors.length) ]
 }
 
 const getDisplayName = (first, last) => {
     const avatarInitials = first[ 0 ] + last[ 0 ]
-    console.log({ avatarInitials });
+    console.log({ avatarInitials })
     return avatarInitials.toUpperCase()
 }
 const formatName = (name) => {
